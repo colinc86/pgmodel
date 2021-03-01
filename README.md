@@ -54,40 +54,6 @@ type Bar struct {
   Value     int       `pg:"value"`
 }
 
-// Exported functions
-
-// GetBar gets a bar from the db.
-func GetBar(tx *pg.Tx, queryKey string, queryValue interface{}) (*Bar, error) {
-  b := new(Bar)
-  _, err := pgmodel.Get(b, tx, queryKey, queryValue)
-  if err != nil {
-    return nil, err
-  }
-  return b, nil
-}
-
-// GetBar gets bars from the db.
-func GetBars(tx *pg.Tx, queryKey string, queryValue interface{}) ([]*Bar, error) {
-  var b []*Bar
-  _, err := pgmodel.GetMany(b, tx, queryKey, queryValue)
-  if err != nil {
-    return nil, err
-  }
-  return b, nil
-}
-
-// Exported methods
-
-// Save saves the bar.
-func (b *Bar) Save(tx *pg.Tx) (orm.Result, error) {
-  return pgmodel.Save(b, tx)
-}
-
-// Delete deletes the bar.
-func (b *Bar) Delete(tx *pg.Tx) (orm.Result, error) {
-  return pgmodel.Delete(b, tx)
-}
-
 // PGModel interface methods
 
 // PrimaryKey returns the model's primary key.
@@ -123,5 +89,39 @@ func (b Bar) NonPKColumns() []string {
 // NonPKValues returns an array of non-primary key values.
 func (b Bar) NonPKValues() []interface{} {
   return []interface{}{b.Name, b.Value}
+}
+```
+
+After implementing the `PGModel` interface, it is possible to write functions/methods such as...
+
+```go
+// Save saves the bar.
+func (b *Bar) Save(tx *pg.Tx) (orm.Result, error) {
+  return pgmodel.Save(b, tx)
+}
+
+// Delete deletes the bar.
+func (b *Bar) Delete(tx *pg.Tx) (orm.Result, error) {
+  return pgmodel.Delete(b, tx)
+}
+
+// GetBar gets a bar from the db.
+func GetBar(tx *pg.Tx, queryKey string, queryValue interface{}) (*Bar, error) {
+  b := new(Bar)
+  _, err := pgmodel.Get(b, tx, queryKey, queryValue)
+  if err != nil {
+    return nil, err
+  }
+  return b, nil
+}
+
+// GetBar gets bars from the db.
+func GetBars(tx *pg.Tx, queryKey string, queryValue interface{}) ([]*Bar, error) {
+  var b []*Bar
+  _, err := pgmodel.GetMany(b, tx, queryKey, queryValue)
+  if err != nil {
+    return nil, err
+  }
+  return b, nil
 }
 ```
