@@ -1,12 +1,14 @@
 # package pgmodel
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/colinc86/pgmodel.svg)](https://pkg.go.dev/github.com/colinc86/pgmodel)
+
 Package pgmodel provides a generalized way of working with Postgres rows. Implementing the PGModel interface allows you to utilize the get, save, and delete functions without having to write repetitive query strings.
 
 Turn this:
 
 ```go
 func (b *Bar) save(tx *pg.Tx) (orm.Result, error) {
-	return tx.Query(b,
+  return tx.Query(b,
     `INSERT INTO foo.bars (id, name, date, value) 
     VALUES (?, ?, ?, ?) 
     ON CONFLICT (id) 
@@ -20,7 +22,7 @@ In to this:
 
 ```go
 func (b *Bar) save(tx *pg.Tx) (orm.Result, error) {
-	return pgmodel.Save(b, tx)
+  return pgmodel.Save(b, tx)
 }
 ```
 
