@@ -126,7 +126,7 @@ func createSaveQuery(pm PGModel) string {
 		strings.Join(im, ", "),
 		pk,
 		strings.Join(sm, ", "),
-		sn,
+		tn,
 		pk,
 	)
 }
