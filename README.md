@@ -52,6 +52,7 @@ type Bar struct {
   ID        uuid.UUID `pg:"id,pk"`
   Name      string    `pg:"name"`
   Value     int       `pg:"value"`
+  Values    []float64 `pg:"values,array"`
 }
 
 // PGModel interface methods
@@ -89,6 +90,21 @@ func (b Bar) NonPKColumns() []string {
 // NonPKValues returns an array of non-primary key values.
 func (b Bar) NonPKValues() []interface{} {
   return []interface{}{b.Name, b.Value}
+}
+
+// ConvertSlice converts the slice, s, in column, c, to a slice of strings.
+func (b Bar) ConvertSlice(s []interface{}, c string) []string {
+  var convertedValues []string
+
+  for _, v := range s {
+    if c == "values" {
+      if conv, ok := v.(float64); ok {
+        convertedValues = append(convertedValues, conv)
+      }
+    }
+  }
+
+  return convertedValues
 }
 ```
 
