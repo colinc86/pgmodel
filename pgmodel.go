@@ -36,6 +36,9 @@ type PGModel interface {
 	// An array of non-primary key values in the same order as the columns defined
 	// by NonPKColumns.
 	NonPKValues() []interface{}
+
+	// Converts a slice, s. from column, c, to a slice of strings.
+	ConvertSlice(s []interface{}, c string) []string
 }
 
 // MARK: Exported functions
@@ -55,8 +58,8 @@ func GetMany(pm []PGModel, t *pg.Tx, queryKey string, queryValue interface{}) (o
 
 // Save performs an upsert in the given transaction.
 func Save(pm PGModel, t *pg.Tx) (orm.Result, error) {
-	pkv := pm.PrimaryKeyValue()
-	npkv := pm.NonPKValues()
+	pkv := convertVariable(pm, pm.PrimaryKeyValue(), pm.PrimaryKey())
+	npkv := convertVariables(pm)
 
 	// Create total column/value slices
 	v := append([]interface{}{pkv}, npkv...)
@@ -147,4 +150,22 @@ func createDeleteQuery(pm PGModel) string {
 		sn,
 		pk,
 	)
+}
+
+func convertVariables(pm PGModel) []interface{} {
+	var cv []interface{}
+	for i, u := range pm.NonPKValues() {
+		cv = append(cv, convertVariable(pm, u, pm.NonPKColumns()[i]))
+	}
+	return cv
+}
+
+func convertVariable(pm PGModel, v interface{}, c string) interface{} {
+	rt := reflect.TypeOf(v)
+	switch rt.Kind() {
+	case reflect.Slice:
+		return pm.ConvertSlice(v.([]interface{}), c)
+	default:
+		return v
+	}
 }
