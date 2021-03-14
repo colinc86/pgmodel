@@ -158,7 +158,7 @@ func createDeleteQuery(pm PGModel) string {
 		WHERE %s.%s = ?`,
 		sn,
 		tn,
-		sn,
+		tn,
 		pk,
 	)
 }
