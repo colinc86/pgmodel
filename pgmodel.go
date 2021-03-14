@@ -37,8 +37,19 @@ type PGModel interface {
 	// by NonPKColumns.
 	NonPKValues() []interface{}
 
-	// Converts a slice, s. from column, c, to a slice of strings.
-	ConvertSlice(s []interface{}, c string) []string
+	// Converts the model's slice from column, c, to a string value.
+	//
+	// This method's return value should be a stirng appropriate for a query. I.e.
+	// if the value in column c is the slice of floats, [0.1, 0.2, 0.3], then the
+	// method should return the string
+	//
+	//     {0.1, 0.2, 0.3}
+	//
+	// whereas if the value in c is the byte slice [0xA3, 0xA4, 0xA5], then the
+	// method should return
+	//
+	//     a3a4a5
+	ConvertSlice(c string) string
 }
 
 // MARK: Exported functions
@@ -164,7 +175,7 @@ func convertVariable(pm PGModel, v interface{}, c string) interface{} {
 	rt := reflect.TypeOf(v)
 	switch rt.Kind() {
 	case reflect.Slice:
-		return pm.ConvertSlice(v.([]interface{}), c)
+		return pm.ConvertSlice(c)
 	default:
 		return v
 	}

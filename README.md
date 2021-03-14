@@ -92,19 +92,27 @@ func (b Bar) NonPKValues() []interface{} {
   return []interface{}{b.Name, b.Value}
 }
 
-// ConvertSlice converts the slice, s, in column, c, to a slice of strings.
-func (b Bar) ConvertSlice(s []interface{}, c string) []string {
+// Converts the model's slice from column, c, to a string value.
+//
+// This method's return value should be a stirng appropriate for a query. I.e.
+// if the value in column c is the slice of floats, [0.1, 0.2, 0.3], then the
+// method should return the string
+//
+//     {0.1, 0.2, 0.3}
+//
+// whereas if the value in c is the byte slice [0xA3, 0xA4, 0xA5], then the
+// method should return
+//
+//     a3a4a5
+func (b Bar) ConvertSlice(c string) string {
   var convertedValues []string
-
-  for _, v := range s {
-    if c == "values" {
-      if conv, ok := v.(float64); ok {
-        convertedValues = append(convertedValues, conv)
-      }
+  if c == "values" {
+    for _, v := range b.values {
+      convertedValues = append(convertedValues, fmt.Sprintf("%f", v))
     }
   }
 
-  return convertedValues
+  return "{" + strings.Join(convertedValues, ",") + "}"
 }
 ```
 
